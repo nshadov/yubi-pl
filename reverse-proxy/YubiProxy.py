@@ -1,3 +1,4 @@
+import logging
 from twisted.web.server import Site
 from twisted.web import proxy
 from twisted.web.resource import Resource, EncodingResourceWrapper
@@ -11,8 +12,10 @@ class Static(Resource):
     def render_GET(self, request):
         return "<html>Hello, world!</html>"
 
-class YubiProxy:
+class YubiProxy(Site):
     def __init__(self, dhost, dport):
+        Site.__init__(self, dhost, dport)
+        logging.debug("Creating new YubiProxy")
         self._dhost = dhost
         self._dport = dport
         self._path = ""
@@ -29,5 +32,6 @@ class YubiProxy:
     def getSite(self):
         site = self._getProxy()
         self._site = Site(site)
+        logging.debug("New site returned: %s" % self._site)
         return self._site
 

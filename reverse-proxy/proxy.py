@@ -1,36 +1,31 @@
 #!/usr/bin/env python
-#
-#
-#
 
-RHOST = "blog.whitecatsec.com"
-RPORT = 80
-
-LPORT = 8080
-
+import logging
 from twisted.internet import reactor
-from twisted.web import proxy, server, resource
+# ---
+from YubiProxy import YubiProxy
+# --- ---
 
-from twisted.web.resource import EncodingResourceWrapper
+logging.basicConfig(filename="debug.log", level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(module)sf:%(funcName)s: %(message)s")
 
-class YubiClient(proxy.ProxyClient):
-    def handleHeader(self, key, value):
-        ProxyClient.handleHeader(self, key, value)
 
-class YubiClientFactory(proxy.ProxyClientFactory):
-    protocol = YubiClient
 
-class YubiProxy(proxy.ReverseProxyResource):
-    proxyClientFactoryClass = YubiClientFactory
 
-    def getChild(self, path, request):
-        return self.__class__(RHOST, RPORT, "")
+def main():
+    logging.info("=======================[ STARTING ... ]=======================")
 
-    def render(self, request):
-        proxy.ReverseProxyResource.render(self, request)
+    yp = YubiProxy("blog.whitecatsec.com", 80)
+    reactor.listenTCP(8080, yp.getSite())
+    reactor.run()
 
-yproxy = YubiProxy(RHOST, RPORT, '')
+    logging.info("=======================[ FINISHED ]=======================")
 
-site = server.Site(yproxy)
-reactor.listenTCP(LPORT, site)
-reactor.run()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception, e:
+        logging.error("Last resort exception handler. Exception caught! %s" % e)
+        print e
+        sys.exit(-1)
+
