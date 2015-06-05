@@ -1,3 +1,5 @@
+import logging
+import traceback
 from twisted.web import iweb
 from time import sleep
 
@@ -19,7 +21,7 @@ class YubiEncoder(object):
         self._request = request
 
     def encode(self, data):
-        logging.debug("Encoding part of request: %s" % request)
+        logging.debug("Encoding part of request data: %s" % data)
         return data.upper()
 
     def finish(self):

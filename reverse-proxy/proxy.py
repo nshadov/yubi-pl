@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import sys
 import logging
 from twisted.internet import reactor
+from twisted.web.server import Site
 # ---
 from YubiProxy import YubiProxy
 # --- ---
@@ -15,7 +17,8 @@ def main():
     logging.info("=======================[ STARTING ... ]=======================")
 
     yp = YubiProxy("blog.whitecatsec.com", 80)
-    reactor.listenTCP(8080, yp.getSite())
+
+    reactor.listenTCP(8080, Site(yp))
     reactor.run()
 
     logging.info("=======================[ FINISHED ]=======================")
@@ -26,6 +29,6 @@ if __name__ == "__main__":
         main()
     except Exception, e:
         logging.error("Last resort exception handler. Exception caught! %s" % e)
-        print e
-        sys.exit(-1)
+        logging.exception("EXCEPTION")
+        raise
 
