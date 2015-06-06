@@ -1,16 +1,7 @@
 import logging
-from twisted.web import proxy
-from twisted.web.resource import Resource, EncodingResourceWrapper
-from twisted.web.server import Site
-
-from YubiEncoder import YubiEncoderFactory
+from twisted.web.resource import Resource
 from YubiReverseProxy import *
 
-
-class TestStatic(Resource):
-    isLeaf = True
-    def render_GET(self, request):
-        return "<html>Hello, world!</html>"
 
 class YubiProxy(Resource):
     isLeaf = False

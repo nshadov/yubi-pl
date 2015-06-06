@@ -7,55 +7,30 @@ from twisted.web.resource import Resource
 from twisted.web import proxy, server, resource
 from twisted.web.server import NOT_DONE_YET
 
+from YubiEncoder import YubiEncoder
+
+
 class YubiReverseProxyClient(proxy.ProxyClient):
     def __init__(self, command, rest, version, headers, data, father):
-        logging.debug("FATHER: %s" % father)
+        self.encoder = YubiReverseProxyClientFactory.encoder()
+        self.encoder.modify_request(command, rest, father)
         proxy.ProxyClient.__init__(self, command, rest, version, headers, data, father)
-
-    def handleHeader(self, key, value):
-        logging.debug("Handeling header for new YRPC: %s = %s." % (key, value))
-        proxy.ProxyClient.handleHeader(self, key, value)
 
     def handleResponsePart(self, buffer):
         logging.debug("Got Response Part: %d bytes." % len(buffer))
-        logging.debug(buffer)
+        buffer = self.encoder.modify_response_buffer(buffer)
         proxy.ProxyClient.handleResponsePart(self, buffer)
 
     def handleStatus(self, version, code, message):
         logging.debug("Got status: %s - %s" % (str(code), message))
         self.father.setResponseCode(int(code), message)
 
+
 class YubiReverseProxyClientFactory(proxy.ProxyClientFactory):
     protocol = YubiReverseProxyClient
+    encoder = YubiEncoder
 
 class YubiReverseProxy(proxy.ReverseProxyResource):
     proxyClientFactoryClass = YubiReverseProxyClientFactory
 
-    def __init__(self, rhost, rport, path, reactor=reactor):
-        logging.debug("Creating new PROXY (%s, %s, %s) [RESOURCE-PROXY]" % (rhost,rport,path))
-        proxy.ReverseProxyResource.__init__(self, rhost, rport, path, reactor)
 
-    def getChild(self, path, request):
-        logging.debug("Getting child: %s (request: %s)" % (path, request))
-        return YubiReverseProxy(
-            self.host, self.port, self.path + '/' + urlquote(path, safe=""),
-            self.reactor)
-
-    def render(self, request):
-        if self.port == 80:
-            host = self.host
-        else:
-            host = "%s:%d" % (self.host, self.port)
-        request.requestHeaders.setRawHeaders(b"host", [host])
-        request.content.seek(0, 0)
-        qs = urlparse.urlparse(request.uri)[4]
-        if qs:
-            rest = self.path + '?' + qs
-        else:
-            rest = self.path
-        clientFactory = self.proxyClientFactoryClass(
-            request.method, rest, request.clientproto,
-            request.getAllHeaders(), request.content.read(), request)
-
-        self.reactor.connectTCP(self.host, self.port, clientFactory)
-        return NOT_DONE_YET

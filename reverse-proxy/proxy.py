@@ -16,7 +16,8 @@ logging.basicConfig(filename="debug.log", level=logging.DEBUG, format="%(asctime
 def main():
     logging.info("=======================[ STARTING ... ]=======================")
 
-    yp = YubiProxy("blog.whitecatsec.com", 80)
+    #yp = YubiProxy("blog.whitecatsec.com", 80)
+    yp = YubiProxy("example.com", 80)
 
     reactor.listenTCP(8080, Site(yp))
     reactor.run()
