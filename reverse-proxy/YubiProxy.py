@@ -25,4 +25,3 @@ class YubiProxy(Resource):
 
         self.proxy = YubiReverseProxy(self.dhost, self.dport, self.path)
         self.putChild( "", self.proxy )
-

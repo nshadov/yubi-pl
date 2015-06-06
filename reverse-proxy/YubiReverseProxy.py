@@ -18,7 +18,8 @@ class YubiReverseProxyClient(proxy.ProxyClient):
 
     def handleResponsePart(self, buffer):
         logging.debug("Got Response Part: %d bytes." % len(buffer))
-        self.father.write(buffer)
+        logging.debug(buffer)
+        proxy.ProxyClient.handleResponsePart(self, buffer)
 
     def handleStatus(self, version, code, message):
         logging.debug("Got status: %s - %s" % (str(code), message))
@@ -55,5 +56,6 @@ class YubiReverseProxy(proxy.ReverseProxyResource):
         clientFactory = self.proxyClientFactoryClass(
             request.method, rest, request.clientproto,
             request.getAllHeaders(), request.content.read(), request)
+
         self.reactor.connectTCP(self.host, self.port, clientFactory)
         return NOT_DONE_YET
