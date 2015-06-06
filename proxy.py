@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import sys
+import sys, os
 import logging
 from twisted.internet import reactor
 from twisted.web.server import Site
 # ---
-from YubiProxy import YubiProxy
+from yubiproxy.YubiProxy import YubiProxy
 # --- ---
 
 logging.basicConfig(filename="debug.log", level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(module)sf:%(funcName)s: %(message)s")
