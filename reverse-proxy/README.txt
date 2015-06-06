@@ -16,3 +16,14 @@ Simple HTTP proxy:
   * Open web browser and visit URL:
 
     http://localhost:8080
+
+
+
+========[ INSTALL ]========
+
+
+Python Dependencies:
+
+  * Python 2.7 (aptitude install python2.7)
+  * Twisted (pip install twisted)
+  * BeautifulSoup 4 (pip install beautifulsoup4)
