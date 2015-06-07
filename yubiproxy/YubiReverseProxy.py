@@ -13,18 +13,21 @@ from YubiEncoder import YubiEncoder
 class YubiReverseProxyClient(proxy.ProxyClient):
     def __init__(self, command, rest, version, headers, data, father):
         self.encoder = YubiReverseProxyClientFactory.encoder()
-        self.encoder.modify_request(command, rest, father)
+        self.encoder.modifyRequest(command, rest, father)
         proxy.ProxyClient.__init__(self, command, rest, version, headers, data, father)
 
     def handleResponsePart(self, buffer):
         logging.debug("Got Response Part: %d bytes." % len(buffer))
-        buffer = self.encoder.modify_response_buffer(buffer)
+        buffer = self.encoder.modifyResponseBuffer(buffer)
+        self.fixContentLength(buffer)
         proxy.ProxyClient.handleResponsePart(self, buffer)
 
     def handleStatus(self, version, code, message):
         logging.debug("Got status: %s - %s" % (str(code), message))
         self.father.setResponseCode(int(code), message)
 
+    def fixContentLength(self, buffer):
+        self.father.responseHeaders.setRawHeaders(b"Content-Length", [b"%s" % (len(buffer))])
 
 class YubiReverseProxyClientFactory(proxy.ProxyClientFactory):
     protocol = YubiReverseProxyClient
