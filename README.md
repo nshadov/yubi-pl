@@ -1,29 +1,24 @@
-========[ GENERAL DESCRIPTION ]========
+# GENERAL DESCRIPTION 
 
-Simple HTTP proxy:
+## Simple HTTP proxy:
 
-  * Receives request at LPORT tcp port
-  * Sends request to RHOST:RPORT and receives response
-  * Forwards response to active connection at LPORT
+ * Receives request at LPORT tcp port
+ * Sends request to RHOST:RPORT and receives response
+ * Forwards response to active connection at LPORT
 
+# HOW TO
 
-========[ HOW TO ]========
+ * Start proxy:
 
-  * Start proxy:
+>  ./proxy.py
 
-    ./proxy.py
+ * Open web browser and visit URL:
+  http://localhost:8080
 
-  * Open web browser and visit URL:
-
-    http://localhost:8080
-
-
-
-========[ INSTALL ]========
-
+# INSTALL
 
 Python Dependencies:
 
-  * Python 2.7 (aptitude install python2.7)
-  * Twisted (pip install twisted)
-  * BeautifulSoup 4 (pip install beautifulsoup4)
+ * Python 2.7 (aptitude install python2.7)
+ * Twisted (pip install twisted)
+ * BeautifulSoup 4 (pip install beautifulsoup4)
